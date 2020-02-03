@@ -1,0 +1,46 @@
+Thu Jun 30 17:53:56 1994 :: Running game on port 4000.
+Thu Jun 30 17:53:56 1994 :: Using lib as data directory.
+Thu Jun 30 17:53:56 1994 :: Signal trapping.
+Thu Jun 30 17:53:57 1994 :: Opening mother connection.
+Thu Jun 30 17:53:57 1994 :: Boot db -- BEGIN.
+Thu Jun 30 17:53:57 1994 :: Resetting the game time:
+Thu Jun 30 17:53:57 1994 ::    Current Gametime: 14H 8D 9M 114Y.
+Thu Jun 30 17:53:57 1994 :: Reading newsfile, credits, help-page, info and motd.
+Thu Jun 30 17:53:58 1994 :: Opening mobile, object and help files.
+Thu Jun 30 17:54:00 1994 :: Loading zone table.
+Thu Jun 30 17:54:00 1994 :: Loading rooms.
+Thu Jun 30 17:54:06 1994 :: Renumbering rooms.
+Room -15538 does not exist in database
+Thu Jun 30 17:54:06 1994 :: Generating index tables for mobile and object files.
+Thu Jun 30 17:54:07 1994 :: Renumbering zone table.
+Thu Jun 30 17:54:07 1994 :: Generating player index.
+Thu Jun 30 17:54:07 1994 :: Loading fight messages.
+Thu Jun 30 17:54:07 1994 :: Loading social messages.
+Thu Jun 30 17:54:07 1994 :: Loading pose messages.
+Thu Jun 30 17:54:07 1994 :: Assigning function pointers:
+Thu Jun 30 17:54:07 1994 ::    Mobiles.
+Thu Jun 30 17:54:07 1994 ::    Objects.
+Thu Jun 30 17:54:07 1994 ::    Room.
+Thu Jun 30 17:54:07 1994 ::    Commands.
+Thu Jun 30 17:54:07 1994 ::    Spells.
+Thu Jun 30 17:54:07 1994 :: Updating characters with saved items:
+Performing boot-time reset of LIMBO (rooms 0-3).
+Performing boot-time reset of Northern Midgaard Main City (rooms 4-3099).
+Performing boot-time reset of Southern part of Midgaard (rooms 3100-3199).
+Performing boot-time reset of River of Midgaard (rooms 3200-3299).
+Performing boot-time reset of Buildings in Midgaard (rooms 3300-3399).
+Performing boot-time reset of The Graveyard (rooms 3400-3499).
+Performing boot-time reset of Moria level 1-2 (rooms 3500-4099).
+Performing boot-time reset of Moria level 3-4 (rooms 4100-4199).
+Performing boot-time reset of HAON-DOR-LIGHT (rooms 4200-6099).
+Performing boot-time reset of HAON-DOR-DARK (rooms 6100-6199).
+Performing boot-time reset of QUIFAEL-CUSTOM-ROOMS (rooms 6200-6999).
+Performing boot-time reset of Sewer (rooms 7000-7099).
+Performing boot-time reset of SecondSewer (rooms 7100-7199).
+Performing boot-time reset of SEWERMAZE (rooms 7200-7399).
+Performing boot-time reset of The tunnels (rooms 7400-7899).
+Performing boot-time reset of Redferne's Residence (rooms 7900-7999).
+Performing boot-time reset of Main matrix (rooms 8000-8099).
+Performing boot-time reset of Main_matrix_auxiliary (rooms 8100-8999).
+Thu Jun 30 17:54:10 1994 :: Boot db -- DONE.
+Thu Jun 30 17:54:10 1994 :: Entering game loop.
