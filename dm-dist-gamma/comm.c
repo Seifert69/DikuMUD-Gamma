@@ -187,7 +187,7 @@ int run_the_game(int port)
 
 	void signal_setup(void);
 	int load(void);
-	void coma(void);
+	void coma(int s);
 
 	PROFILE(monstartup((int) 2, etext);)
 
@@ -202,7 +202,7 @@ int run_the_game(int port)
 	if (lawful && load() >= 6)
 	{
 		log("System load too high at startup.");
-		coma();
+		coma(s);
 	}
 
 	boot_db();
@@ -968,7 +968,7 @@ void nonblock(int s)
 #define COMA_SIGN \
 "\n\r\
 DikuMUD is currently inactive due to excessive load on the host machine.\n\r\
-Please try again later.\n\r\n
+Please try again later.\n\r\n\
 \n\r\
    Sadly,\n\r\
 \n\r\

@@ -24,8 +24,8 @@ void damage(struct char_data *ch, struct char_data *victim,
             int damage, int weapontype);
 bool saves_spell(struct char_data *ch, sh_int spell);
 void weight_change_object(struct obj_data *obj, int weight);
-char *strdup(char *source);
 int dice(int number, int size);
+void do_look(struct char_data *ch, char *argument, int cmd);
 
 
 /* Offensive Spells */

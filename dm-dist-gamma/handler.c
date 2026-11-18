@@ -1154,7 +1154,6 @@ struct obj_data *create_money( int amount )
 	struct extra_descr_data *new_descr;
 	char buf[80];
 
-	char *strdup(char *str);
 
 	if(amount<=0)
 	{
