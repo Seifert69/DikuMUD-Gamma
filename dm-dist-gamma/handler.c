@@ -14,6 +14,9 @@
 #include "comm.h"
 #include "db.h"
 #include "handler.h"
+#include "interpreter.h"
+
+void free_obj(struct obj_data *obj);
 
 extern struct room_data *world;
 extern struct obj_data  *object_list;

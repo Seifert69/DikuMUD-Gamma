@@ -6,11 +6,15 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include "structs.h"
 #include "limits.h"
 #include "utils.h"
 #include "spells.h"
 #include "comm.h"
+#include "handler.h"
+
+void stop_fighting(struct char_data *ch);
 
 #define READ_TITLE(ch) (GET_SEX(ch) == SEX_MALE ?   \
 	titles[GET_CLASS(ch)-1][GET_LEVEL(ch)].title_m :  \

@@ -99,9 +99,6 @@ char *find_ex_description(char *word, struct extra_descr_data *list)
 void show_obj_to_char(struct obj_data *object, struct char_data *ch, int mode)
 {
 	char buffer[MAX_STRING_LENGTH] = "\0";
-	char *temp_desc;
-	struct obj_data *i;
-	int temp;
 	bool found;
 
 	if ((mode == 0) && object->description)
@@ -863,13 +860,12 @@ void do_weather(struct char_data *ch, char *argument, int cmd)
 
 void do_help(struct char_data *ch, char *argument, int cmd)
 {
-	extern char *spells[];   /* The list of spells (spells.c)         */
 	extern int top_of_helpt;
 	extern struct help_index_element *help_index;
 	extern FILE *help_fl;
 	extern char help[MAX_STRING_LENGTH];
 
-	int i, no, chk, bot, top, mid, minlen;
+	int chk, bot, top, mid, minlen;
 	char buf[MAX_STRING_LENGTH], buffer[MAX_STRING_LENGTH];
 
 
@@ -931,7 +927,7 @@ void do_help(struct char_data *ch, char *argument, int cmd)
 
 
 
-do_wizhelp(struct char_data *ch, char *argument, int cmd)
+void do_wizhelp(struct char_data *ch, char *argument, int cmd)
 {
 	char buf[MAX_STRING_LENGTH];
 	int no, i;
@@ -1206,7 +1202,7 @@ void do_levels(struct char_data *ch, char *argument, int cmd)
 void do_consider(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
-	char name[256], buf[256];
+	char name[256];
 	int diff;
 
 	one_argument(argument, name);

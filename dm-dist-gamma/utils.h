@@ -11,9 +11,20 @@
 
 #define UPPER(c) (((c)>='a'  && (c) <= 'z') ? ((c)+('A'-'a')) : (c) )
 
+#include <stdlib.h>
+
 /* Functions in utility.c                     */
 /* #define MAX(a,b) (((a) > (b)) ? (a) : (b)) */
 /* #define MIN(a,b) (((a) < (b)) ? (a) : (b)) */
+int MIN(int a, int b);
+int MAX(int a, int b);
+int number(int from, int to);
+int dice(int number, int size);
+int str_cmp(char *arg1, char *arg2);
+int strn_cmp(char *arg1, char *arg2, int n);
+void log(char *str);
+void sprintbit(long vektor, char *names[], char *result);
+void sprinttype(int type, char *names[], char *result);
 
 #define ISNEWL(ch) ((ch) == '\n' || (ch) == '\r') 
 

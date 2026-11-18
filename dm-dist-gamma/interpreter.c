@@ -15,6 +15,9 @@
 #include "db.h"
 #include "utils.h"
 #include "limits.h"
+#include "handler.h"
+
+void do_start(struct char_data *ch);
 
 #define COMMANDO(number,min_pos,pointer,min_level) {      \
 	cmd_info[(number)].command_pointer = (pointer);         \
@@ -1014,7 +1017,7 @@ void nanny(struct descriptor_data *d, char *arg)
 	char tmp_name[20];
 	char *hash;
 	struct char_file_u tmp_store;
-	struct char_data *ch, *tmp_ch;
+	struct char_data *tmp_ch;
 	struct descriptor_data *k;
 	extern struct descriptor_data *descriptor_list;
 

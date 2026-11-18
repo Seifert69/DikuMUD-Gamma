@@ -16,6 +16,13 @@
 #include "spells.h"
 #include "limits.h"
 
+void damage(struct char_data *ch, struct char_data *victim,
+            int damage, int weapontype);
+int do_simple_move(struct char_data *ch, int cmd, int following);
+void hit(struct char_data *ch, struct char_data *victim, int type);
+void set_fighting(struct char_data *ch, struct char_data *vict);
+void stop_fighting(struct char_data *ch);
+
 /* extern variables */
 
 extern struct room_data *world;
@@ -29,7 +36,6 @@ void raw_kill(struct char_data *ch);
 void do_hit(struct char_data *ch, char *argument, int cmd)
 {
 	char arg[MAX_STRING_LENGTH];
-	char buffer[MAX_STRING_LENGTH];
 	struct char_data *victim;
 
 	one_argument(argument, arg);
@@ -67,7 +73,6 @@ void do_hit(struct char_data *ch, char *argument, int cmd)
 void do_kill(struct char_data *ch, char *argument, int cmd)
 {
 	static char arg[MAX_STRING_LENGTH];
-	char buf[70];
 	struct char_data *victim;
 
 	if ((GET_LEVEL(ch) < 24) || IS_NPC(ch)) {
@@ -266,7 +271,7 @@ void do_flee(struct char_data *ch, char *argument, int cmd)
 void do_bash(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
-	char name[256], buf[256];
+	char name[256];
 	byte percent;
 
 	one_argument(argument, name);
@@ -316,7 +321,6 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
 	struct char_data *victim, *tmp_ch;
 	int percent;
 	char victim_name[240];
-	char buf[240];
 
 	one_argument(argument, victim_name);
 
@@ -377,7 +381,7 @@ void do_rescue(struct char_data *ch, char *argument, int cmd)
 void do_kick(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
-	char name[256], buf[256];
+	char name[256];
 	byte percent;
 
 
