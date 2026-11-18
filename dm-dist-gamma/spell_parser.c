@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include "structs.h"
 #include "utils.h"
@@ -46,7 +47,6 @@ extern char *spell_wear_off_msg[];
 
 /* Extern procedures */
 
-char *strdup(char *str);
 
 /* Extern procedures */
 void cast_armor( byte level, struct char_data *ch, char *arg, int si, struct char_data *tar_ch, struct obj_data *tar_obj);
@@ -284,7 +284,6 @@ void clone_char(struct char_data *ch)
 void clone_obj(struct obj_data *obj)
 {
 	struct obj_data *clone;
-	struct extra_descr_data *ed, temp;
 
 
 	CREATE(clone, struct obj_data, 1);
@@ -402,7 +401,7 @@ void add_follower(struct char_data *ch, struct char_data *leader)
 
 
 
-say_spell( struct char_data *ch, int si )
+void say_spell( struct char_data *ch, int si )
 {
 	char buf[MAX_STRING_LENGTH], splwd[MAX_BUF_LENGTH];
 	char buf2[MAX_STRING_LENGTH];

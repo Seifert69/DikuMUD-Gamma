@@ -17,6 +17,13 @@
 #include "spells.h"
 #include "limits.h"
 
+void add_follower(struct char_data *ch, struct char_data *leader);
+void cast_lightning_bolt(byte level, struct char_data *ch, char *arg, int type,
+  struct char_data *tar_ch, struct obj_data *tar_obj);
+void do_action(struct char_data *ch, char *argument, int cmd);
+void do_get(struct char_data *ch, char *argument, int cmd);
+void do_look(struct char_data *ch, char *argument, int cmd);
+
 /*   external vars  */
 
 extern struct room_data *world;
@@ -71,7 +78,6 @@ char *how_good(int percent)
 
 int guild(struct char_data *ch, int cmd, char *arg) {
 
-	char arg1[MAX_STRING_LENGTH];
 	char buf[MAX_STRING_LENGTH];
 	int number, i, percent;
 
@@ -838,7 +844,7 @@ int fido(struct char_data *ch, int cmd, char *arg)
 
 int janitor(struct char_data *ch, int cmd, char *arg)
 {
-	struct obj_data *i, *temp, *next_obj;
+	struct obj_data *i;
 
 	if (cmd || !AWAKE(ch))
 		return(FALSE);

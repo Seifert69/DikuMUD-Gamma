@@ -19,6 +19,8 @@
 #include <sys/time.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <unistd.h>
+#include <time.h>
 
 #include "structs.h"
 #include "utils.h"
@@ -26,6 +28,10 @@
 #include "interpreter.h"
 #include "handler.h"
 #include "db.h"
+
+void night_watchman(void);
+void update_time(void);
+void weather_and_time(int mode);
 
 #define DFLT_PORT 4000        /* default port */
 #define MAX_NAME_LENGTH 15
@@ -187,7 +193,7 @@ int run_the_game(int port)
 
 	void signal_setup(void);
 	int load(void);
-	void coma(void);
+	void coma(int s);
 
 	PROFILE(monstartup((int) 2, etext);)
 
@@ -202,7 +208,7 @@ int run_the_game(int port)
 	if (lawful && load() >= 6)
 	{
 		log("System load too high at startup.");
-		coma();
+		coma(s);
 	}
 
 	boot_db();
@@ -222,6 +228,7 @@ int run_the_game(int port)
 	}
 
 	log("Normal termination of game.");
+	return(0);
 }
 
 
@@ -232,12 +239,11 @@ int run_the_game(int port)
 /* Accept new connects, relay commands, and call 'heartbeat-functs' */
 int game_loop(int s)
 {
-	int tmp_room, old_len;
 	fd_set input_set, output_set, exc_set;
 	struct timeval last_time, now, timespent, timeout, null_time;
 	static struct timeval opt_time;
 	char comm[MAX_INPUT_LENGTH];
-	struct descriptor_data *t, *point, *next_point;
+	struct descriptor_data *point, *next_point;
 	int pulse = 0, mask;
 
 	null_time.tv_sec = 0;
@@ -424,6 +430,7 @@ int game_loop(int s)
 
 		tics++;        /* tics since last checkpoint signal */
 	}
+	return(0);
 }
 
 
@@ -539,7 +546,6 @@ int init_socket(int port)
 	char *opt;
 	char hostname[MAX_HOSTNAME+1];
 	struct sockaddr_in sa;
-	struct hostent *hp;
 /*	struct linger ld;  */
 /*  linger stuff not supported by Linux.... Taken out bsp 11/22/92 */
 
@@ -602,7 +608,6 @@ int new_connection(int s)
 	/* struct sockaddr peer; */
 	int i;
 	int t;
-	char buf[100];
 
 	i = sizeof(isa);
 	getsockname(s, &isa, &i);
@@ -641,7 +646,6 @@ int new_descriptor(int s)
 	int size;
 	struct sockaddr_in sock;
 	struct hostent *from;
-	char buf[10];
 
 	if ((desc = new_connection(s)) < 0)
 		return (-1);
@@ -892,7 +896,6 @@ void close_sockets(int s)
 
 void close_socket(struct descriptor_data *d)
 {
-	struct affected_type *af;
 	struct descriptor_data *tmp;
 	char buf[100];
 
@@ -968,7 +971,7 @@ void nonblock(int s)
 #define COMA_SIGN \
 "\n\r\
 DikuMUD is currently inactive due to excessive load on the host machine.\n\r\
-Please try again later.\n\r\n
+Please try again later.\n\r\n\
 \n\r\
    Sadly,\n\r\
 \n\r\

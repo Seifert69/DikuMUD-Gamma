@@ -6,12 +6,17 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 #include "structs.h"
 #include "utils.h"
 #include "comm.h"
 #include "spells.h"
 #include "handler.h"
 #include "limits.h"
+#include "db.h"
+
+void death_cry(struct char_data *ch);
+void update_pos(struct char_data *victim);
 
 /* Extern structures */
 extern struct room_data *world;
@@ -24,8 +29,8 @@ void damage(struct char_data *ch, struct char_data *victim,
             int damage, int weapontype);
 bool saves_spell(struct char_data *ch, sh_int spell);
 void weight_change_object(struct obj_data *obj, int weight);
-char *strdup(char *source);
 int dice(int number, int size);
+void do_look(struct char_data *ch, char *argument, int cmd);
 
 
 /* Offensive Spells */
@@ -931,7 +936,6 @@ void spell_protection_from_evil(byte level, struct char_data *ch,
 void spell_remove_curse(byte level, struct char_data *ch,
   struct char_data *victim, struct obj_data *obj)
 {
-	struct affected_type af;
 
 	assert(ch && (victim || obj));
 

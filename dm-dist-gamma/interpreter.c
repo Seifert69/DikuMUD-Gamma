@@ -8,12 +8,16 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <crypt.h>
 #include "structs.h"
 #include "comm.h"
 #include "interpreter.h"
 #include "db.h"
 #include "utils.h"
 #include "limits.h"
+#include "handler.h"
+
+void do_start(struct char_data *ch);
 
 #define COMMANDO(number,min_pos,pointer,min_level) {      \
 	cmd_info[(number)].command_pointer = (pointer);         \
@@ -973,6 +977,33 @@ int _parse_name(char *arg, char *name)
 
 	return(0);
 }
+
+
+
+/* crypt() the password, with the name (new password) or the stored hash */
+/* (check) as DES salt. libcrypt returns NULL or a failure token ("*0",  */
+/* "*1") when it can't hash; that is never compared or stored.           */
+char *pwd_crypt(char *pwd, char *salt)
+{
+	char *hash;
+
+	hash = crypt(pwd, salt);
+	if (!hash || *hash == '*')
+		return(0);
+
+	return(hash);
+}
+
+
+
+/* returns: 0 if pwd matches the stored hash; a failed crypt() never does */
+int pwd_check(char *pwd, char *hash)
+{
+	char *p;
+
+	p = pwd_crypt(pwd, hash);
+	return(!p || strncmp(p, hash, 10));
+}
 			
 
 
@@ -984,8 +1015,9 @@ void nanny(struct descriptor_data *d, char *arg)
 	char buf[100];
 	int player_i;
 	char tmp_name[20];
+	char *hash;
 	struct char_file_u tmp_store;
-	struct char_data *ch, *tmp_ch;
+	struct char_data *tmp_ch;
 	struct descriptor_data *k;
 	extern struct descriptor_data *descriptor_list;
 
@@ -1091,6 +1123,7 @@ void nanny(struct descriptor_data *d, char *arg)
 				if (*arg == 'n' || *arg == 'N') {
 					SEND_TO_Q("Ok, what IS it, then? ", d);
 					free(GET_NAME(d->character));
+					GET_NAME(d->character) = 0;
 					STATE(d) = CON_NME;
 				} else { /* Please do Y or N */
 					SEND_TO_Q("Please type Yes or No? ", d);
@@ -1105,7 +1138,7 @@ void nanny(struct descriptor_data *d, char *arg)
 			   close_socket(d);
 			else
 			{
-				if (strncmp(crypt(arg, d->pwd), d->pwd, 10))
+				if (pwd_check(arg, d->pwd))
 				{
 					SEND_TO_Q("Wrong password.\n\r", d);
 					SEND_TO_Q("Password: ", d);
@@ -1152,7 +1185,20 @@ void nanny(struct descriptor_data *d, char *arg)
 				return;
 			}
 
-			strncpy(d->pwd, crypt(arg, d->character->player.name), 10);
+			if (!(hash = pwd_crypt(arg, d->character->player.name)))
+			{
+				sprintf(buf, "crypt() failed for the new password of %s.",
+					GET_NAME(d->character));
+				log(buf);
+				SEND_TO_Q("That name can't be given a password, please try another.\n\r", d);
+				SEND_TO_Q("Name: ", d);
+				free(GET_NAME(d->character));
+				GET_NAME(d->character) = 0;
+				STATE(d) = CON_NME;
+				return;
+			}
+
+			strncpy(d->pwd, hash, 10);
 			*(d->pwd + 10) = '\0';
 			
 			SEND_TO_Q("Please retype password: ", d);
@@ -1164,7 +1210,7 @@ void nanny(struct descriptor_data *d, char *arg)
 			/* skip whitespaces */
 			for (; isspace(*arg); arg++);
 
-			if (strncmp(crypt(arg, d->pwd), d->pwd, 10))
+			if (pwd_check(arg, d->pwd))
 			{
 				SEND_TO_Q("Passwords don't match.\n\r", d);
 				SEND_TO_Q("Retype password: ", d);
@@ -1364,7 +1410,18 @@ void nanny(struct descriptor_data *d, char *arg)
 				return;
 			}
 
-			strncpy(d->pwd, crypt(arg, d->character->player.name), 10);
+			if (!(hash = pwd_crypt(arg, d->character->player.name)))
+			{
+				sprintf(buf, "crypt() failed for a new password of %s; the password is unchanged.",
+					GET_NAME(d->character));
+				log(buf);
+				SEND_TO_Q("Your password could not be changed.\n\r", d);
+				SEND_TO_Q(MENU, d);
+				STATE(d) = CON_SLCT;
+				return;
+			}
+
+			strncpy(d->pwd, hash, 10);
 			*(d->pwd + 10) = '\0';
 
 			SEND_TO_Q("Please retype password: ", d);
@@ -1375,7 +1432,7 @@ void nanny(struct descriptor_data *d, char *arg)
 			/* skip whitespaces */
 			for (; isspace(*arg); arg++);
 
-			if (strncmp(crypt(arg, d->pwd), d->pwd, 10))
+			if (pwd_check(arg, d->pwd))
 			{
 				SEND_TO_Q("Passwords don't match.\n\r", d);
 				SEND_TO_Q("Retype password: ", d);

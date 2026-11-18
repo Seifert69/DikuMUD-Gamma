@@ -10,10 +10,10 @@
 
 #include "utils.h"
 
-int checkpointing(void);
-int shutdown_request(void);
-int logsig(void);
-int hupsig(void);
+void checkpointing(int sig);
+void shutdown_request(int sig);
+void logsig(int sig);
+void hupsig(int sig);
 
 void signal_setup(void)
 {
@@ -42,7 +42,7 @@ void signal_setup(void)
 
 
 
-int checkpointing(void)
+void checkpointing(int sig)
 {
 	extern int tics;
 	
@@ -58,20 +58,20 @@ int checkpointing(void)
 
 
 
-int shutdown_request(void)
+void shutdown_request(int sig)
 {
-	extern int shutdown;
+	extern int diku_shutdown;
 
 	log("Received USR2 - shutdown request");
-	shutdown = 1;
+	diku_shutdown = 1;
 }
 
 
 
 /* kick out players etc */
-int hupsig(void)
+void hupsig(int sig)
 {
-	extern int shutdown;
+	extern int diku_shutdown;
 
 	log("Received SIGHUP, SIGINT, or SIGTERM. Shutting down");
 	exit(0);   /* something more elegant should perhaps be substituted */
@@ -79,7 +79,7 @@ int hupsig(void)
 
 
 
-int logsig(void)
+void logsig(int sig)
 {
 	log("Signal received. Ignoring.");
 }

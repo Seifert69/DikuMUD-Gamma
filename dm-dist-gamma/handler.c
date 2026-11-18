@@ -14,6 +14,9 @@
 #include "comm.h"
 #include "db.h"
 #include "handler.h"
+#include "interpreter.h"
+
+void free_obj(struct obj_data *obj);
 
 extern struct room_data *world;
 extern struct obj_data  *object_list;
@@ -1154,7 +1157,6 @@ struct obj_data *create_money( int amount )
 	struct extra_descr_data *new_descr;
 	char buf[80];
 
-	char *strdup(char *str);
 
 	if(amount<=0)
 	{

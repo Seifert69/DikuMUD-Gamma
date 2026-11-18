@@ -14,6 +14,11 @@
 #include "interpreter.h"
 #include "utils.h"
 
+void do_action(struct char_data *ch, char *argument, int cmd);
+void do_emote(struct char_data *ch, char *argument, int cmd);
+void do_say(struct char_data *ch, char *argument, int cmd);
+void do_tell(struct char_data *ch, char *argument, int cmd);
+
 #define SHOP_FILE "tinyworld.shp"
 #define MAX_TRADE 5
 #define MAX_PROD 5
@@ -112,7 +117,6 @@ void shopping_buy( char *arg, struct char_data *ch,
 {
 	char argm[100], buf[MAX_STRING_LENGTH];
 	struct obj_data *temp1;
-	struct char_data *temp_char;
 
 	if(!(is_ok(keeper,ch,shop_nr)))
 		return;
@@ -219,7 +223,6 @@ void shopping_sell( char *arg, struct char_data *ch,
 {
 	char argm[100], buf[MAX_STRING_LENGTH];
 	struct obj_data *temp1;
-	struct char_data *temp_char;
 
 	if(!(is_ok(keeper,ch,shop_nr)))
 		return;
@@ -402,8 +405,7 @@ void shopping_kill( char *arg, struct char_data *ch,
 
 int shop_keeper(struct char_data *ch, int cmd, char *arg)
 {
-	char argm[100], buf[MAX_STRING_LENGTH];
-	struct obj_data *temp1;
+	char argm[100];
 	struct char_data *temp_char;
 	struct char_data *keeper;
 	int shop_nr;

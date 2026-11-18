@@ -16,6 +16,11 @@
 #include "handler.h"
 #include "limits.h"
 
+void assign_mobiles(void);
+void assign_objects(void);
+void assign_rooms(void);
+void set_title(struct char_data *ch);
+
 #define NEW_ZONE_SYSTEM
 
 /**************************************************************************
@@ -199,7 +204,6 @@ void boot_db(void)
 void reset_time(void)
 {
 	char buf[MAX_STRING_LENGTH];
-	struct time_info_data mud_time;
 
 	long beginning_of_time = 650336715;
 
@@ -222,7 +226,7 @@ void reset_time(void)
 
 	fscanf(f1, "#\n");
 
-	fscanf(f1, "%D\n", &last_time);
+	fscanf(f1, "%ld\n", &last_time);
 	fscanf(f1, "%d\n", &last_time_info.hours);
 	fscanf(f1, "%d\n", &last_time_info.day);
 	fscanf(f1, "%d\n", &last_time_info.month);
@@ -350,7 +354,7 @@ void update_time(void)
 
 	fprintf(f1, "#\n");
 
-	fprintf(f1, "%d\n", current_time);
+	fprintf(f1, "%ld\n", current_time);
 	fprintf(f1, "%d\n", time_info.hours);
 	fprintf(f1, "%d\n", time_info.day);
 	fprintf(f1, "%d\n", time_info.month);
@@ -420,7 +424,6 @@ struct index_data *generate_indices(FILE *fl, int *top)
 {
 	int i = 0;
 	struct index_data *index;
-	long pos;
 	char buf[82];
 
 	rewind(fl);
@@ -470,7 +473,7 @@ struct index_data *generate_indices(FILE *fl, int *top)
 void boot_world(void)
 {
 	FILE *fl;
-	int room_nr = 0, zone = 0, dir_nr, virtual_nr, flag, tmp;
+	int room_nr = 0, zone = 0, virtual_nr, flag, tmp;
 	char *temp, chk[50];
 	struct extra_descr_data *new_descr;
 
@@ -737,7 +740,7 @@ void renum_zone_table(void)
 void boot_zones(void)
 {
 	FILE *fl;
-	int zon = 0, cmd_no = 0, ch, expand, tmp;
+	int zon = 0, cmd_no = 0, expand, tmp;
 	char *check, buf[81];
 
 	if (!(fl = fopen(ZONE_FILE, "r")))
@@ -939,10 +942,10 @@ void boot_zones(void)
 /* read a mobile from MOB_FILE */
 struct char_data *read_mobile(int nr, int type)
 {
-	int i, skill_nr;
+	int i;
 	long tmp, tmp2, tmp3;
 	struct char_data *mob;
-	char chk[10], buf[100];
+	char buf[100];
 	char letter;
 
 	i = nr;
@@ -968,14 +971,14 @@ struct char_data *read_mobile(int nr, int type)
 
 	/* *** Numeric data *** */
 
-	fscanf(mob_f, "%d ", &tmp);
+	fscanf(mob_f, "%ld ", &tmp);
 	mob->specials.act = tmp;
 	SET_BIT(mob->specials.act, ACT_ISNPC);
 
-	fscanf(mob_f, " %d ", &tmp);
+	fscanf(mob_f, " %ld ", &tmp);
 	mob->specials.affected_by = tmp;
 
-	fscanf(mob_f, " %d ", &tmp);
+	fscanf(mob_f, " %ld ", &tmp);
 	mob->specials.alignment = tmp;
 
 	fscanf(mob_f, " %c \n", &letter);
@@ -988,20 +991,20 @@ struct char_data *read_mobile(int nr, int type)
 		mob->abilities.dex   = 11;
 		mob->abilities.con   = 11;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		GET_LEVEL(mob) = tmp;
 		
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.hitroll = 20-tmp;
 		
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.armor = 10*tmp;
 
-		fscanf(mob_f, " %Dd%D+%D ", &tmp, &tmp2, &tmp3);
+		fscanf(mob_f, " %ldd%ld+%ld ", &tmp, &tmp2, &tmp3);
 		mob->points.max_hit = dice(tmp, tmp2)+tmp3;
 		mob->points.hit = mob->points.max_hit;
 
-		fscanf(mob_f, " %Dd%D+%D \n", &tmp, &tmp2, &tmp3);
+		fscanf(mob_f, " %ldd%ld+%ld \n", &tmp, &tmp2, &tmp3);
 		mob->points.damroll = tmp3;
 		mob->specials.damnodice = tmp;
 		mob->specials.damsizedice = tmp2;
@@ -1012,19 +1015,19 @@ struct char_data *read_mobile(int nr, int type)
 		mob->points.move = 50;
 		mob->points.max_move = 50;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.gold = tmp;
 
-		fscanf(mob_f, " %D \n", &tmp);
+		fscanf(mob_f, " %ld \n", &tmp);
 		GET_EXP(mob) = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->specials.position = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->specials.default_pos = tmp;
 
-		fscanf(mob_f, " %D \n", &tmp);
+		fscanf(mob_f, " %ld \n", &tmp);
 		mob->player.sex = tmp;
 
 		mob->player.class = 0;
@@ -1043,80 +1046,80 @@ struct char_data *read_mobile(int nr, int type)
 
 	} else {  /* The old monsters are down below here */
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->abilities.str = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->abilities.intel = tmp; 
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->abilities.wis = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->abilities.dex = tmp;
 
-		fscanf(mob_f, " %D \n", &tmp);
+		fscanf(mob_f, " %ld \n", &tmp);
 		mob->abilities.con = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
-		fscanf(mob_f, " %D ", &tmp2);
+		fscanf(mob_f, " %ld ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp2);
 
 		mob->points.max_hit = number(tmp, tmp2);
 		mob->points.hit = mob->points.max_hit;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.armor = 10*tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.mana = tmp;
 		mob->points.max_mana = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.move = tmp;		
 		mob->points.max_move = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->points.gold = tmp;
 
-		fscanf(mob_f, " %D \n", &tmp);
+		fscanf(mob_f, " %ld \n", &tmp);
 		GET_EXP(mob) = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->specials.position = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->specials.default_pos = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->player.sex = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->player.class = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		GET_LEVEL(mob) = tmp;
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->player.time.birth = time(0);
 		mob->player.time.played	= 0;
 		mob->player.time.logon  = time(0);
 
-		fscanf(mob_f, " %D ", &tmp);
+		fscanf(mob_f, " %ld ", &tmp);
 		mob->player.weight = tmp;
 
-		fscanf(mob_f, " %D \n", &tmp);
+		fscanf(mob_f, " %ld \n", &tmp);
 		mob->player.height = tmp;
 
 		for (i = 0; i < 3; i++)
 		{
-			fscanf(mob_f, " %D ", &tmp);
+			fscanf(mob_f, " %ld ", &tmp);
 			GET_COND(mob, i) = tmp;
 		}
 		fscanf(mob_f, " \n ");
 
 		for (i = 0; i < 5; i++)
 		{
-			fscanf(mob_f, " %D ", &tmp);
+			fscanf(mob_f, " %ld ", &tmp);
 			mob->specials.apply_saving_throw[i] = tmp;
 		}
 
@@ -1822,8 +1825,7 @@ void char_to_store(struct char_data *ch, struct char_file_u *st)
 /* create a new entry in the in-memory index table for the player file */
 int create_entry(char *name)
 {
-	int i, pos;
-	struct player_index_element tmp;
+	int i;
 
 	if (top_of_p_table == -1)
 	{
@@ -1913,7 +1915,7 @@ int compare(struct player_index_element *arg1, struct player_index_element
 /* read and allocate space for a '~'-terminated string from a given file */
 char *fread_string(FILE *fl)
 {
-	char buf[MAX_STRING_LENGTH], tmp[500];
+	char buf[MAX_STRING_LENGTH], tmp[MAX_STRING_LENGTH];
 	char *rslt;
 	register char *point;
 	int flag;

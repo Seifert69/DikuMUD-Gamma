@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "structs.h"
 #include "utils.h"
@@ -16,6 +17,9 @@
 #include "db.h"
 #include "spells.h"
 #include "limits.h"
+
+void do_look(struct char_data *ch, char *argument, int cmd);
+void gain_exp_regardless(struct char_data *ch, int gain);
 
 /*   external vars  */
 
@@ -44,7 +48,7 @@ int move_gain(struct char_data *ch);
 
 
 
-do_emote(struct char_data *ch, char *argument, int cmd)
+void do_emote(struct char_data *ch, char *argument, int cmd)
 {
 	int i;
 	static char buf[MAX_STRING_LENGTH];
@@ -278,7 +282,6 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 	char arg1[MAX_STRING_LENGTH];
 	char buf[MAX_STRING_LENGTH];
 	char buf2[MAX_STRING_LENGTH];
-	struct char_data *victim=0;
 	struct room_data *rm=0;
 	struct char_data *k=0;
 	struct obj_data  *j=0;
@@ -658,7 +661,7 @@ void do_stat(struct char_data *ch, char *argument, int cmd)
 			strcat(buf, buf2);
 			send_to_char(buf, ch);
 
-			sprintf(buf,"Birth : [%ld]secs, Logon[%ld]secs, Played[%ld]secs\n\r", 
+			sprintf(buf,"Birth : [%ld]secs, Logon[%ld]secs, Played[%d]secs\n\r", 
 			        k->player.time.birth,
 			        k->player.time.logon,
 			        k->player.time.played);
@@ -823,7 +826,7 @@ void do_shutdow(struct char_data *ch, char *argument, int cmd)
 
 void do_shutdown(struct char_data *ch, char *argument, int cmd)
 {
-	extern int shutdown, reboot;
+	extern int diku_shutdown, reboot;
 	char buf[100], arg[MAX_INPUT_LENGTH];
 
 	if (IS_NPC(ch))
@@ -836,14 +839,14 @@ void do_shutdown(struct char_data *ch, char *argument, int cmd)
 		sprintf(buf, "Shutdown by %s.", GET_NAME(ch) );
 		send_to_all(buf);
 		log(buf);
-		shutdown = 1;
+		diku_shutdown = 1;
 	}
 	else if (!str_cmp(arg, "reboot"))
 	{
 		sprintf(buf, "Reboot by %s.", GET_NAME(ch));
 		send_to_all(buf);
 		log(buf);
-		shutdown = reboot = 1;
+		diku_shutdown = reboot = 1;
 	}
 	else
 		send_to_char("Go shut down someone your own size.\n\r", ch);
@@ -916,7 +919,6 @@ void do_snoop(struct char_data *ch, char *argument, int cmd)
 void do_switch(struct char_data *ch, char *argument, int cmd)
 {
 	static char arg[MAX_STRING_LENGTH];
-	char buf[70];
 	struct char_data *victim;
 
 	if (IS_NPC(ch))
@@ -969,8 +971,6 @@ void do_switch(struct char_data *ch, char *argument, int cmd)
 
 void do_return(struct char_data *ch, char *argument, int cmd)
 {
-	static char arg[MAX_STRING_LENGTH];
-	char buf[70];
 
 	if(!ch->desc)
 		return;
@@ -1042,11 +1042,9 @@ void do_load(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *mob;
 	struct obj_data *obj;
-	char type[100], num[100], buf[100];
+	char type[100], num[100];
 	int number, r_num;
 
-	extern int top_of_mobt;
-	extern int top_of_objt;
 
 	if (IS_NPC(ch))
 		return;
@@ -1106,7 +1104,7 @@ void do_purge(struct char_data *ch, char *argument, int cmd)
 	struct char_data *vict, *next_v;
 	struct obj_data *obj, *next_o;
 
-	char name[100], buf[100];
+	char name[100];
 
 	if (IS_NPC(ch))
 		return;
@@ -1245,11 +1243,7 @@ void roll_abilities(struct char_data *ch)
 
 void do_start(struct char_data *ch)
 {
-	int i, j;
-	byte table[5];
-	byte rools[4];
 
-	extern struct dex_skill_type dex_app_skill[];
 	void advance_level(struct char_data *ch);
 
 	send_to_char("Welcome. This is now you character in DikuMud,\n\rYou can now earn XP, and lots more...\n\r", ch);
@@ -1302,7 +1296,7 @@ void do_start(struct char_data *ch)
 void do_advance(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
-	char name[100], level[100], buf[240];
+	char name[100], level[100];
 	int adv, newlevel;
 
 	void gain_exp(struct char_data *ch, int gain);
@@ -1396,7 +1390,6 @@ void do_reroll(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *victim;
 	char buf[100];
-	sh_int target;
 
 	if (IS_NPC(ch))
 		return;
@@ -1462,7 +1455,7 @@ void do_restore(struct char_data *ch, char *argument, int cmd)
 
 
 
-do_noshout(struct char_data *ch, char *argument, int cmd)
+void do_noshout(struct char_data *ch, char *argument, int cmd)
 {
 	struct char_data *vict;
 	struct obj_data *dummy;

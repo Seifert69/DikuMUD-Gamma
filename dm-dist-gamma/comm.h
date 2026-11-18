@@ -3,9 +3,11 @@
 *  Usage: Prototypes for the common functions in comm.c                   *
 ************************************************************************* */
 
+void close_socket(struct descriptor_data *d);
 void send_to_all(char *messg);
 void send_to_char(char *messg, struct char_data *ch);
 void send_to_except(char *messg, struct char_data *ch);
+void send_to_outdoor(char *messg);
 void send_to_room(char *messg, int room);
 void send_to_room_except(char *messg, int room, struct char_data *ch);
 void send_to_room_except_two

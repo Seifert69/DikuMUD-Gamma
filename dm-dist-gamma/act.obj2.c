@@ -16,6 +16,8 @@
 #include "db.h"
 #include "spells.h"
 
+void gain_condition(struct char_data *ch, int condition, int value);
+
 /* extern variables */
 
 extern struct str_app_type str_app[];
@@ -88,7 +90,7 @@ void do_drink(struct char_data *ch, char *argument, int cmd)
 	char buf[100];
 	struct obj_data *temp;
 	struct affected_type af;
-	int amount,i;
+	int amount;
 
 
 	one_argument(argument,buf);
@@ -442,7 +444,6 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
 {
 	struct affected_type af;
 	char arg[MAX_STRING_LENGTH];
-	char buf[MAX_STRING_LENGTH];
 	struct obj_data *temp;
 
 	one_argument(argument,arg);
@@ -501,10 +502,8 @@ void do_taste(struct char_data *ch, char *argument, int cmd)
 
 /* functions related to wear */
 
-perform_wear(struct char_data *ch, struct obj_data *obj_object, int keyword)
+void perform_wear(struct char_data *ch, struct obj_data *obj_object, int keyword)
 {
-	char buffer[MAX_STRING_LENGTH];
-	struct char_data *i;
 
 	switch(keyword) {
 		case 0 :
@@ -919,7 +918,6 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
 	char arg2[MAX_STRING_LENGTH];
 	char buffer[MAX_STRING_LENGTH];
 	struct obj_data *obj_object;
-	int keyword = 13;
 
 
 	argument_interpreter(argument, arg1, arg2);
@@ -944,11 +942,8 @@ void do_grab(struct char_data *ch, char *argument, int cmd)
 void do_remove(struct char_data *ch, char *argument, int cmd)
 {
 	char arg1[MAX_STRING_LENGTH];
-	char buffer[MAX_STRING_LENGTH];
-	char buffer1[MAX_STRING_LENGTH];
 	struct obj_data *obj_object;
-	struct char_data *tmp_char;
-	int i, j;
+	int j;
 
 	one_argument(argument, arg1);
 

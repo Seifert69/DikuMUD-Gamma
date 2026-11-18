@@ -146,7 +146,6 @@ void string_add(struct descriptor_data *d, char *str)
 void quad_arg(char *arg, int *type, char *name, int *field, char *string)
 {
 	char buf[MAX_STRING_LENGTH];
-	int i;
 
 	/* determine type */
 	arg = one_argument(arg, buf);
@@ -678,7 +677,7 @@ void night_watchman(void)
 	long tc;
 	struct tm *t_info;
 
-	extern int shutdown;
+	extern int diku_shutdown;
 
 	void send_to_all(char *messg);
 
@@ -691,7 +690,7 @@ void night_watchman(void)
 		{
 			log("Leaving the scene for the serious folks.");
 			send_to_all("Closing down. Thank you for flying DikuMUD.\n\r");
-			shutdown = 1;
+			diku_shutdown = 1;
 		}
 		else if (t_info->tm_min > 40)
 			send_to_all("ATTENTION: DikuMUD will shut down in 10 minutes.\n\r");
@@ -707,7 +706,7 @@ void check_reboot(void)
 	char dummy;
 	FILE *boot;
 
-	extern int shutdown, reboot;
+	extern int diku_shutdown, reboot;
 
 	tc = time(0);
 	t_info = localtime(&tc);
@@ -735,7 +734,7 @@ void check_reboot(void)
 				}
 
 				send_to_all("Automatic reboot. Come back in a little while.\n\r");
-				shutdown = reboot = 1;
+				diku_shutdown = reboot = 1;
 			}
 			else if (t_info->tm_min > 40)
 				send_to_all("ATTENTION: DikuMUD will reboot in 10 minutes.\n\r");
@@ -789,7 +788,7 @@ int load(void)
 		char	sl_load2[10];	/* "+2.3 14u\0" */
 	} info;
 	FILE *fl;
-	int ld, i, sum;
+	int i, sum;
 	static int previous[5];
 	static int p_point = -1;
 	extern int slow_death;
@@ -895,7 +894,7 @@ void gr(int s)
  	};
 	static int wnr = 0;
 
-	extern int slow_death, shutdown;
+	extern int slow_death, diku_shutdown;
 
 	void send_to_all(char *messg);
 
@@ -928,10 +927,10 @@ void gr(int s)
 				wnr = 0;
 			}
 			else
-				shutdown = 1;
+				diku_shutdown = 1;
 	}
 	else if (workhours())
-		shutdown = 1;				/* this shouldn't happen */
+		diku_shutdown = 1;				/* this shouldn't happen */
 	else if (wnr)
 	{
 		send_to_all("Things look brighter now - you can continue playing.\n\r");
